@@ -1,0 +1,3 @@
+Files/TRF123456.xml	P1	S1
+Files/TRF789012.xml	P2	S2
+Files/TRF345678.xml	P3	S3
