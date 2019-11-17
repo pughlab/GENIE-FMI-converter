@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+
+import subprocess as sp
+import argparse as ap
+import re
+import sys,os
+from pyfaidx import Fasta
+from lxml import etree
+
+#Added to include current path for the imports below...
+sys.path.append(os.path.join(os.getcwd(), "elements"))
+
+# user-defined
+from elements.element import decompose
+from elements.sequence import generate_maf
+from elements.CNV import generate_cnv, output_cnvs
+
+def check(xml, schema_file):
+    schema = etree.XMLSchema(etree.parse(schema_file))
+    return schema(xml)
+
+
+def per_file(filename, iID, prefix, p_ident, s_ident, schema, fasta, cnvs, keys, mafout, missing, mm):
+    xml = etree.parse(filename)
+    # validate against schema
+    if check(xml, schema):
+        # parse XML into object
+        obj = decompose(xml.getroot())
+
+        # output MAF
+        paths = obj.find("short-variant")
+        generate_maf(filename, iID, prefix, paths, p_ident, s_ident, fasta, mafout, missing, mm)
+
+        # get CNVs
+        paths = obj.find("copy-number-alteration")
+        generate_cnv(paths, iID, p_ident, s_ident, cnvs, keys)
+    else:
+        print("File does not validate: {}".format(filename), file=sys.stderr)
+
+
+def main(filename, schema, iID, fasta, prefix):
+    # write MAF header
+    with open("data_mutations_extended_{}.txt".format(iID), 'w') as mafout:
+        print("Chromosome", "Start_Position", "Reference_Allele",
+                         "Tumor_Seq_Allele2", "Tumor_Sample_Barcode",
+                         "t_alt_count", "t_depth",
+              file=mafout, sep="\t")
+
+        cnvs = {}
+        keys = []
+
+        with open(filename, 'r') as inf, open("missing.txt", 'w') as missing, open("mismatches.txt", 'w') as mm:
+            print("file/id", "entry", file=missing)
+            print("file", "entry", "ref_sequence", file=mm)
+
+            for line in inf:
+                filename, p_ident, s_ident = line.split()
+                per_file(filename, iID, prefix, p_ident, s_ident, schema, fasta, cnvs, keys, mafout, missing, mm)
+
+    output_cnvs(iID, cnvs, keys)
+
+parser = ap.ArgumentParser()
+parser.add_argument("file", type=str, help="input file containing one filename and one identifier per line")
+parser.add_argument("schema", type=str, help="schema")
+parser.add_argument("-g,--genome", type=str, help="fasta file for local genome")
+parser.add_argument("-p,--prefix", type=str, help="prefix for chromosome lookup")
+parser.add_argument("-i,--institution", type=str, help="institution ID")
+
+if __name__ == '__main__':
+    args = vars(parser.parse_args())
+    genome = None
+    pref = "chr"
+    genieID = "DUKE"
+    
+    if args["p,__prefix"]:
+        pref = args["p,__prefix"]
+    
+    if args["g,__genome"]:
+        genome = Fasta(args["g,__genome"], rebuild=False)
+
+    if args["i,__institution"]:
+        genieID = args["i,__institution"]
+
+    main(args["file"], args["schema"], genieID, genome, pref)

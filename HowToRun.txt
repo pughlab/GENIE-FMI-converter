@@ -1,0 +1,14 @@
+pip3 install pyfaidx
+pip3 install lxml
+
+#The "list.txt" needs to contain the GENIE cases we want to upload.
+#All of the FoundationOne reports need to be in this directory
+
+#Run the MAF generator
+python3 xml_annotator -g ucsc.hg19.fasta -i DUKE list.txt ResultsReport.2.1.xsd
+
+#The output files generated are:
+#data_mutations_extended_DUKE.txt
+#data_CNA_DUKE.txt
+#missing.txt
+#mismatches.txt
