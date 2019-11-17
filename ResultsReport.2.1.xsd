@@ -1,0 +1,28 @@
+<xs:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rr="http://integration.foundationmedicine.com/reporting" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://integration.foundationmedicine.com/reporting" rr:schemaLocation="http://integration.foundationmedicine.com/reporting http://integration.foundationmedicine.com/reporting/ResultsReport.2.1.xsd" elementFormDefault="qualified">
+<xs:element name="ResultsReport">
+<xs:complexType>
+<xs:sequence>
+<xs:element ref="rr:CustomerInformation"/>
+<xs:element name="ResultsPayload" nillable="false"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="CustomerInformation">
+<xs:complexType>
+<xs:sequence>
+<xs:element ref="rr:ReferenceID"/>
+<xs:element ref="rr:CSN"/>
+<xs:element ref="rr:TRF"/>
+<xs:element ref="rr:MRN"/>
+<xs:element ref="rr:PhysicianId"/>
+<xs:element ref="rr:NPI"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="ReferenceID" type="xs:string"/>
+<xs:element name="CSN" type="xs:string"/>
+<xs:element name="TRF" type="xs:string"/>
+<xs:element name="MRN" type="xs:string"/>
+<xs:element name="PhysicianId" type="xs:string"/>
+<xs:element name="NPI" type="xs:string"/>
+</xs:schema>
