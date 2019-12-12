@@ -5,13 +5,17 @@ This is the converter for foundation medicine provided by DUKE for GENIE
 
 
 ### Setting up the Docker container
-NOTE: if you already have the fastas downloaded, comment (#) the lines in the Dockerfile and use the docker run command with volumes mounted replace with your source directory (-v) 
+NOTE: if you already have the fastas downloaded, comment (#) the lines in the Dockerfile and use the docker run command with volumes mounted replaced with your source directory (-v) 
 
 ```sh
 $ git clone https://github.com/pughlab/GENIE-FMI-converter.git 
 $ cd GENIE-FMI-converter
 $ docker build -t genie_fmi --rm . 
+
+With volumes and fastas mounted:
 $ docker run -it -v path/to/source/directory:/GENIE-FMI-converter/fasta genie_fmi 
+
+Fastas built into Docker container:
 $ docker run -it genie_fmi 
 ```
 
